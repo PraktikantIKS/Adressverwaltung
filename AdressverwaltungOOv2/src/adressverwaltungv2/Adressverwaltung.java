@@ -6,12 +6,12 @@ import java.util.regex.Pattern;
 public class Adressverwaltung {
 
 	private static String MENU_OPTION_PATTERN = "[1-6]";
-	private static String ID_PATTERN = "[0-" + (Adressspeicher.getNUMBER_OF_POSSIBLE_IDS() - 1) + "]";
-	private static String addressPattern = "[^,]+,[^,]+,[^,]+,[^,]+";
-	private static String namePattern = "\\s*[A-Z][a-zßüäö]+\\s[A-Z][a-zßüäö]+\\s*";
-	private static String streetPattern = "\\s*[A-Z][a-zßüäö]+(-[A-Z][a-zßüäö]+)*\\s[0-9]+[A-Za-zßüäö]*\\s*";
-	private static String plzPattern = "\\s*\\d{5}\\s*";
-	private static String porPattern = "\\s*[A-Z][a-zßüäö]+(-[A-Z][a-zßüäö]+)*\\s*";
+//	private static String ID_PATTERN = "[0-" + (Adressspeicher.getNUMBER_OF_POSSIBLE_IDS() - 1) + "]";
+	private static String ADDRESS_PATTERN = "[^,]+,[^,]+,[^,]+,[^,]+";
+	private static String NAME_PATTERN = "\\s*[A-Z][a-zßüäö]+\\s[A-Z][a-zßüäö]+\\s*";
+	private static String STREET_PATTERN = "\\s*[A-Z][a-zßüäö]+(-[A-Z][a-zßüäö]+)*\\s[0-9]+[A-Za-zßüäö]*\\s*";
+	private static String PLZ_PATTERN = "\\s*\\d{5}\\s*";
+	private static String POR_PATTERN = "\\s*[A-Z][a-zßüäö]+(-[A-Z][a-zßüäö]+)*\\s*";
 	private static String MISSING_ID_MESSAGE = "Die ID wurde nicht gefunden.";
 	private static String WRONG_ADDRESS_PATTERN_MESSAGE = "Die Adresse konnte nicht übernommen werden, da sie falsch eingegeben wurde.";
 	private static String FULL_ADDRESS_MEMORY = "Der Speicher ist voll und kann keine weiteren Adressen aufnehmen.";
@@ -20,7 +20,6 @@ public class Adressverwaltung {
 
 	public static void main(String[] args) {
 		// Adressspeicher as = new Adressspeicher();
-		Adressspeicher.initAdresses();
 		Scanner sc = new Scanner(System.in);
 		menuOptions();
 		while (sc.hasNextLine()) {
@@ -58,6 +57,7 @@ public class Adressverwaltung {
 			switch (Integer.parseInt(option)) {
 			case 1:
 			System.out.println("Gib eine Adresse ein. Trenne Name, Straße, PLZ und Ort durch ein Komma");
+			checkAddressPattern(sc.nextLine());
 			// Adressspeicher.addAddress(sc, Adressspeicher.calculateID());
 			 break;
 			// case 2:
@@ -89,7 +89,7 @@ public class Adressverwaltung {
 		stopProgram = true;
 	}
 	
-	// prüft, ob die eingegebene ID existiert und gibt in dem
+/*	// prüft, ob die eingegebene ID existiert und gibt in dem
 		// Fall true zurück, sonst false
 	static boolean checkIfIDExists(String addressID) {
 		if (Adressspeicher.getAddress(Integer.parseInt(addressID)) != null) {
@@ -97,7 +97,7 @@ public class Adressverwaltung {
 		}
 		System.out.println("Die eingegebene ID '" + addressID+"' existiert nicht.");
 		return false;
-	}
+	}*/
 	
 	static void message(int messageNumber) {
 		int switchNumber = messageNumber;
@@ -106,12 +106,12 @@ public class Adressverwaltung {
 			switchNumber = 1;
 		}
 		switch(switchNumber) {
-		case 1: message ="Adresse zu der ID " + messageNumber + ":\n" + Adressspeicher.getAddress(messageNumber).getName()
+		case 1: message ="Die Adresse wurde erfolgreich eingetragen.\nID" + messageNumber + ":\n" + Adressspeicher.getAddress(messageNumber).getName()
 				+ "\n" + Adressspeicher.getAddress(messageNumber).getStraße() + "\n"
 				+ Adressspeicher.getAddress(messageNumber).getPLZ() + " " + Adressspeicher.getAddress(messageNumber).getOrt()
 				+ "\n"; break;
 		case -1: message = MISSING_ID_MESSAGE; break;
-		case -2: message = "Die Adresse wurde erfolgreich eingetragen."; break;
+		case -2: message = ""; break;
 		case -3: message = FULL_ADDRESS_MEMORY; break;
 		case -4: message = WRONG_ADDRESS_PATTERN_MESSAGE; break;
 		}
@@ -121,9 +121,8 @@ public class Adressverwaltung {
 	static void showAllAddresses() {
 		String allAddresses = "";
 		for (int i = 0; i < Adressspeicher.getNUMBER_OF_POSSIBLE_IDS(); i++) {
-			if (Adressspeicher.getAddress(i).getName() != null && !Adressspeicher.getAddress(i).getName().isEmpty()) {
-				allAddresses += Adressspeicher.getAddress(i).getID() + "\n" + Adressspeicher.getAddress(i).getName() + "\n" + Adressspeicher.getAddress(i).getPLZ() + "\n"
-						+ Adressspeicher.getAddress(i).getPLZ() + " " + Adressspeicher.getAddress(i).getOrt() + "\n"; // Ausgabe aller Adressen
+			if (Adressspeicher.getAddress(i) != null) {
+				allAddresses = Adressspeicher.getAddress(i).getAddressAsString(); // Ausgabe aller Adressen
 			}
 		}
 		if (!allAddresses.isEmpty()) {
@@ -134,33 +133,31 @@ public class Adressverwaltung {
 		}
 	}
 	
-	static boolean checkAddressPattern(String addressLine) {
-		if (addressLine != null && !addressLine.isEmpty() && Pattern.matches(addressPattern, addressLine)) {
+	static void checkAddressPattern(String addressLine) {
+		if (addressLine != null && !addressLine.isEmpty() && Pattern.matches(ADDRESS_PATTERN, addressLine)) {
 			String[] address = addressLine.split(",", 4);
 
 			boolean checkIfEverythingMatches = false;
-			if (Pattern.matches(namePattern, address[0]) && Pattern.matches(streetPattern, address[1])
-					&& Pattern.matches(plzPattern, address[2]) && Pattern.matches(porPattern, address[3])) {
+			if (Pattern.matches(NAME_PATTERN, address[0]) && Pattern.matches(STREET_PATTERN, address[1])
+					&& Pattern.matches(PLZ_PATTERN, address[2]) && Pattern.matches(POR_PATTERN, address[3])) {
 				checkIfEverythingMatches = true;
 			}
 			if (checkIfEverythingMatches) {
-				return true;
+				message(Adressspeicher.addAddress(new Adresse(address[0].trim(), address[1].trim(), Integer.parseInt(address[2].trim()), address[3].trim())));
 			} else {
-				if (!Pattern.matches(namePattern, address[0])) {
+				if (!Pattern.matches(NAME_PATTERN, address[0])) {
 					System.out.println("Du hast einen ungültigen Namen eingegeben.");
 				}
-				if (!Pattern.matches(streetPattern, address[1])) {
+				if (!Pattern.matches(STREET_PATTERN, address[1])) {
 					System.out.println("Du hast eine ungültige Straße eingegeben.");
 				}
-				if (!Pattern.matches(plzPattern, address[2])) {
+				if (!Pattern.matches(PLZ_PATTERN, address[2])) {
 					System.out.println("Du hast eine ungültige PLZ eingegeben.");
 				}
-				if (!Pattern.matches(porPattern, address[3])) {
+				if (!Pattern.matches(POR_PATTERN, address[3])) {
 					System.out.println("Du hast eine ungültige Adresse eingegeben.");
 				}
 			}
 		}
-		return false;
 	}
-
 }

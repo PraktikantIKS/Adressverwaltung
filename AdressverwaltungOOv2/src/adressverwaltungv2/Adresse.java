@@ -56,6 +56,8 @@ public class Adresse {
 		Ort = ort;
 	}
 	
-	
+	String getAddressAsString(){
+		return Name+"\n"+Straﬂe+"\n"+PLZ+" "+Ort+"\n";
+	}
 	
 }
