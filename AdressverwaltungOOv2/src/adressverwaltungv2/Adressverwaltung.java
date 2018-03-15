@@ -6,20 +6,31 @@ import java.util.regex.Pattern;
 public class Adressverwaltung {
 
 	private static String MENU_OPTION_PATTERN = "[1-6]";
+	private static String NUMBER_OF_OPTIONS_STRING = "Gib eine Zahl von 1 bis 6 ein.";
 	private static String ID_PATTERN = "[0-" + (Adressspeicher.getNUMBER_OF_POSSIBLE_IDS() - 1) + "]";
+	// min. ein Zeichen aber kein Komma, Komma, min. ein Zeichen aber kein Komma,
+	// Komma, min. ein Zeichen aber kein Komma, Komma, min. ein Zeichen aber
+	// kein Komma
 	private static String ADDRESS_PATTERN = "[^,]+,[^,]+,[^,]+,[^,]+";
+	// Leerzeichen,"Name",genau ein Leerzeichen,"Name",Leerzeichen
 	private static String NAME_PATTERN = "\\s*[A-Z][a-zßüäö]+\\s[A-Z][a-zßüäö]+\\s*";
+	// Leerzeichen,"Wort"mit möglichem "-Wort",exakt ein
+	// Leerzeichen,Nummer,Buchstabenfolge,Leerzeichen
 	private static String STREET_PATTERN = "\\s*[A-Z][a-zßüäö]+(-[A-Z][a-zßüäö]+)*\\s[0-9]+[A-Za-zßüäö]*\\s*";
+	// Leerzeichen,Zahl aus fünf Ziffern,Leerzeichen
 	private static String PLZ_PATTERN = "\\s*\\d{5}\\s*";
+	// Leerzeichen, "Wort" mit möglichem "-Wort", Leerzeichen
 	private static String POR_PATTERN = "\\s*[A-Z][a-zßüäö]+(-[A-Z][a-zßüäö]+)*\\s*";
 	private static String MISSING_ID_MESSAGE = "Die ID wurde nicht gefunden.";
-	private static String WRONG_ADDRESS_PATTERN_MESSAGE = "Die Adresse konnte nicht übernommen werden, da sie falsch eingegeben wurde.";
+	private static String WRONG_ADDRESS_PATTERN_MESSAGE = "Die Adresse konnte nicht übernommen werden,\nda sie falsch eingegeben wurde.";
 	private static String FULL_ADDRESS_MEMORY = "Der Speicher ist voll und kann keine weiteren Adressen aufnehmen.";
+	private static String SUCCESSFULL_REMOVED_ADDRESS = "Die Adresse wurde erfolgreich entfernt.";
+	private static String WRONG_ID_AND_ADDRESS = "Es wurde eine falsche ID und Adresse eingegeben.";
+	private static String SUCCESSFUL_CHANGED_ADDRESS = "Die Adresse wurde erfolgreich geändert";
 
 	private static boolean stopProgram = false;
 
 	public static void main(String[] args) {
-		// Adressspeicher as = new Adressspeicher();
 		Scanner sc = new Scanner(System.in);
 		menuOptions();
 		while (sc.hasNextLine()) {
@@ -57,7 +68,7 @@ public class Adressverwaltung {
 			switch (Integer.parseInt(option)) {
 			case 1:
 				System.out.println("Gib eine Adresse ein. Trenne Name, Straße, PLZ und Ort durch ein Komma");
-				checkAddressPattern(sc.nextLine());
+				message(Adressspeicher.addAddress(checkAddressPattern(sc.nextLine())));
 				break;
 			case 2:
 				System.out.println("Gib die ID der Adresse ein, die du angezigt bekommen möchtest.");
@@ -66,13 +77,16 @@ public class Adressverwaltung {
 			case 3:
 				showAllAddresses();
 				break;
-			 case 4:
-				 System.out.println("Gib die ID der Adresse ein, die gelöscht werden soll.");
-			message(Adressspeicher.removeAddress(checkIfIDExists(sc.nextLine())));
-			 break;
-			// case 5:
-			// Adressspeicher.changeAddress(sc);
-			// break;
+			case 4:
+				System.out.println("Gib die ID der Adresse ein, die gelöscht werden soll.");
+				message(Adressspeicher.removeAddress(checkIfIDExists(sc.nextLine())));
+				break;
+			case 5:
+				System.out.println(
+						"Gib die ID der Adresse ein, die geändert werden soll, bestätige und gib dann die neue Adresse ein.");
+				message(Adressspeicher.changeAddress(checkIfIDExists(sc.nextLine()),
+						checkAddressPattern(sc.nextLine())));
+				break;
 			case 6:
 				closeProgram();
 				break;
@@ -80,7 +94,7 @@ public class Adressverwaltung {
 				break;
 			}
 		} else {
-			System.out.println("Gib eine Zahl von 1 bis 6 ein.");
+			System.out.println(NUMBER_OF_OPTIONS_STRING);
 		}
 	}
 
@@ -90,6 +104,7 @@ public class Adressverwaltung {
 		stopProgram = true;
 	}
 
+	// gibt entsprechende Meldungen aus, abhängig von der Nummer
 	private static void message(int messageNumber) {
 		int switchNumber = messageNumber;
 		String message = "";
@@ -104,11 +119,8 @@ public class Adressverwaltung {
 					+ Adressspeicher.getAddress(messageNumber).getPLZ() + " "
 					+ Adressspeicher.getAddress(messageNumber).getOrt() + "\n";
 			break;
-		case -1:
-			message = MISSING_ID_MESSAGE;
-			break;
 		case -2:
-			message = "Die eingegebene ID existiert nicht.";
+			message = MISSING_ID_MESSAGE;
 			break;
 		case -3:
 			message = FULL_ADDRESS_MEMORY;
@@ -117,17 +129,26 @@ public class Adressverwaltung {
 			message = WRONG_ADDRESS_PATTERN_MESSAGE;
 			break;
 		case -5:
-			message = "Die Adresse wurde erfolgreich entfernt.";
+			message = SUCCESSFULL_REMOVED_ADDRESS;
+			break;
+		case -6:
+			message = WRONG_ID_AND_ADDRESS;
+			break;
+		case -7:
+			message = SUCCESSFUL_CHANGED_ADDRESS;
 			break;
 		}
 		System.out.println(message);
 	}
 
+	// gibt alle Adressen aus, falls vorhanden
+	// falls nicht, wird eine entsprechende Nachricht ausgegeben
 	private static void showAllAddresses() {
 		String allAddresses = "";
 		for (int i = 0; i < Adressspeicher.getNUMBER_OF_POSSIBLE_IDS(); i++) {
 			if (Adressspeicher.getAddress(i) != null) {
-				allAddresses += "ID: "+Adressspeicher.getAddress(i).getID()+"\n"+Adressspeicher.getAddress(i).getAddressAsString()+"\n\n"; // Ausgabe aller Adressen
+				allAddresses += "ID: " + Adressspeicher.getAddress(i).getID() + "\n"
+						+ Adressspeicher.getAddress(i).getAddressAsString() + "\n\n"; // Ausgabe aller Adressen
 			}
 		}
 		if (!allAddresses.isEmpty()) {
@@ -138,6 +159,8 @@ public class Adressverwaltung {
 		}
 	}
 
+	// gibt die Adresse zur angegebenen ID aus, sofern vorhanden
+	// falls nicht, wird eine entsprechende Nachricht ausgegeben
 	private static void showAddress(int ID) {
 		if (ID != -2) {
 			System.out.println(Adressspeicher.getAddress(ID).getAddressAsString());
@@ -146,7 +169,9 @@ public class Adressverwaltung {
 		}
 	}
 
-	static void checkAddressPattern(String addressLine) {
+	// überprüft, ob die Eingabe des Nutzers eine gültige Adresse ist
+	// falls nicht, wird eine entsprechende Nachricht ausgegeben
+	static Adresse checkAddressPattern(String addressLine) {
 		if (addressLine != null && !addressLine.isEmpty() && Pattern.matches(ADDRESS_PATTERN, addressLine)) {
 			String[] address = addressLine.split(",", 4);
 
@@ -156,8 +181,8 @@ public class Adressverwaltung {
 				checkIfEverythingMatches = true;
 			}
 			if (checkIfEverythingMatches) {
-				message(Adressspeicher.addAddress(new Adresse(address[0].trim(), address[1].trim(),
-						Integer.parseInt(address[2].trim()), address[3].trim())));
+				return new Adresse(address[0].trim(), address[1].trim(), Integer.parseInt(address[2].trim()),
+						address[3].trim());
 			} else {
 				if (!Pattern.matches(NAME_PATTERN, address[0])) {
 					System.out.println("Du hast einen ungültigen Namen eingegeben.");
@@ -173,13 +198,11 @@ public class Adressverwaltung {
 				}
 			}
 		}
-		else {
-			message(-4);
-		}
+		return null;
 	}
 
 	// prüft, ob die eingegebene ID existiert und gibt in dem
-	// Fall true zurück, sonst false
+	// Fall die ID zurück sonst -2
 	static int checkIfIDExists(String addressID) {
 		if (addressID != null && !addressID.isEmpty() && Pattern.matches(ID_PATTERN, addressID)
 				&& Adressspeicher.getAddress(Integer.parseInt(addressID)) != null) {

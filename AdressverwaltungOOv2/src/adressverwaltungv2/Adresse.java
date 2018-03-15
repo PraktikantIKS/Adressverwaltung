@@ -2,62 +2,62 @@ package adressverwaltungv2;
 
 public class Adresse {
 	
-	private int ID;
-	private String Name;
-	private String Straﬂe;
-	private int PLZ;
-	private String Ort;
+	private int id;
+	private String name;
+	private String straﬂe;
+	private int plz;
+	private String ort;
 
 	public Adresse(String name, String straﬂe, int pLZ, String ort) {
-		Name = name;
-		ID = -1;
-		Straﬂe = straﬂe;
-		PLZ = pLZ;
-		Ort = ort;
+		this.name = name;
+		this.id = -1;
+		this.straﬂe = straﬂe;
+		this.plz = pLZ;
+		this.ort = ort;
 	}
 
 	int getID() {
-		return ID;
+		return id;
 	}
 
-	void setID(int iD) {
-		ID = iD;
+	void setID(int id) {
+		this.id = id;
 	}
 
 	String getName() {
-		return Name;
+		return name;
 	}
 
 	void setName(String name) {
-		Name = name;
+		this.name = name;
 	}
 
 	String getStraﬂe() {
-		return Straﬂe;
+		return straﬂe;
 	}
 
 	void setStraﬂe(String straﬂe) {
-		Straﬂe = straﬂe;
+		this.straﬂe = straﬂe;
 	}
 
 	int getPLZ() {
-		return PLZ;
+		return plz;
 	}
 
 	void setPLZ(int pLZ) {
-		PLZ = pLZ;
+		this.plz = pLZ;
 	}
 
 	String getOrt() {
-		return Ort;
+		return ort;
 	}
 
 	void setOrt(String ort) {
-		Ort = ort;
+		this.ort = ort;
 	}
 	
 	String getAddressAsString(){
-		return Name+"\n"+Straﬂe+"\n"+PLZ+" "+Ort;
+		return name+"\n"+straﬂe+"\n"+plz+" "+ort;
 	}
 	
 }
