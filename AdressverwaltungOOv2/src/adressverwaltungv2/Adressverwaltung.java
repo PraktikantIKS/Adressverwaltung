@@ -137,19 +137,7 @@ public class Adressverwaltung {
 	static boolean checkAddressPattern(String addressLine) {
 		if (addressLine != null && !addressLine.isEmpty() && Pattern.matches(addressPattern, addressLine)) {
 			String[] address = addressLine.split(",", 4);
-			/*
-			 * int checkNumberOfMatches = 0; if (Pattern.matches(namePattern, address[0])) {
-			 * checkNumberOfMatches += 1; } else {
-			 * System.out.println("Du hast einen ungültigen Namen eingegeben."); } if
-			 * (Pattern.matches(streetPattern, address[1])) { checkNumberOfMatches += 1; }
-			 * else { System.out.println("Du hast eine ungültige Straße eingegeben."); } if
-			 * (Pattern.matches(plzPattern, address[2])) { checkNumberOfMatches += 1; } else
-			 * { System.out.println("Du hast eine ungültige PLZ eingegeben."); } if
-			 * (Pattern.matches(porPattern, address[3])) { checkNumberOfMatches += 1; } else
-			 * { System.out.println("Du hast eine ungültige Adresse eingegeben."); } if
-			 * (checkNumberOfMatches == 4) { return true; } else {
-			 * System.out.println(checkNumberOfMatches); return false; }
-			 */
+
 			boolean checkIfEverythingMatches = false;
 			if (Pattern.matches(namePattern, address[0]) && Pattern.matches(streetPattern, address[1])
 					&& Pattern.matches(plzPattern, address[2]) && Pattern.matches(porPattern, address[3])) {
